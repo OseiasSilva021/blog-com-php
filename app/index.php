@@ -1,21 +1,5 @@
 <?php
-$host = 'mysql';
-$db = 'blogphp';
-$user = 'usuario';
-$pass = '123456';
-
-
-    $dsn = "mysql:host=$host;dbname=$db;charset=utf8mb4";
-    $pdo = new PDO($dsn, $user, $pass);
-    $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-    
-
-
-
-
-    $dsn = "mysql:host=$host;dbname=$db;charset=utf8mb4";
-    $pdo = new PDO($dsn, $user, $pass);
-    $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+include ('db.php');
 
 
 // Buscar todos os posts publicados

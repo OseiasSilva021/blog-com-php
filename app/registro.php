@@ -1,18 +1,6 @@
 <?php
 // Conexão com o banco de dados
-$host = 'mysql';
-$db = 'blogphp';
-$user = 'usuario';
-$pass = '123456';
-
-try {
-    $dsn = "mysql:host=$host;dbname=$db;charset=utf8mb4";
-    $pdo = new PDO($dsn, $user, $pass);
-    $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-} catch (PDOException $e) {
-    echo "Erro ao conectar com o banco de dados: " . $e->getMessage();
-    exit;
-}
+include ('db.php');
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $username = trim($_POST['username']);

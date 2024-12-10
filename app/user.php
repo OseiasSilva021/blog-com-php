@@ -10,25 +10,20 @@ if (!isset($_SESSION['user_id'])) {
 $user_id = $_SESSION['user_id']; // Obtém o ID do usuário da sessão
 
 // Conexão com o banco de dados
-$host = 'mysql';
-$db = 'blogphp';
-$user = 'usuario';
-$pass = '123456';
-
-try {
-    $dsn = "mysql:host=$host;dbname=$db;charset=utf8mb4";
-    $pdo = new PDO($dsn, $user, $pass);
-    $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-} catch (PDOException $e) {
-    echo "Erro ao conectar com o banco de dados: " . $e->getMessage();
-    exit;
-}
+include ('db.php');
 
 // Buscar informações do usuário com o ID armazenado na sessão
 $stmt = $pdo->prepare("SELECT * FROM users WHERE id = :id");
 $stmt->bindParam(':id', $user_id, PDO::PARAM_INT);
 $stmt->execute();
 $user = $stmt->fetch(PDO::FETCH_ASSOC);
+
+
+if (isset($_POST['logout'])) {
+    session_destroy(); // Destrói a sessão
+    header("Location: login.php"); // Redireciona para a página de login (ou outra página)
+    exit();
+}
 
 // Se o usuário não existir, exibe uma mensagem
 if (!$user) {
@@ -322,5 +317,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <button type="submit">Criar Post</button>
 </form>
 
+  <!-- Formulário de logout -->
+  <form action="" method="POST">
+        <button type="submit" name="logout">Sair da Conta (Logout)</button>
+    </form>
 </body>
 </html>
