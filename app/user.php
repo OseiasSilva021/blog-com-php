@@ -284,7 +284,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <ul class="post-list">
         <?php foreach ($posts as $post): ?>
     <li>
-        <h3><a href="post.php?id=<?= $post['id'] ?>"><?= htmlspecialchars($post['title']) ?></a></h3>
+        <h3><a href=""<?= $post['id'] ?>"><?= htmlspecialchars($post['title']) ?></a></h3>
         <h4><?= htmlspecialchars($post['content']) ?></h4>
         <p>Publicado em: <?= date('d/m/Y H:i', strtotime($post['created_at'])) ?></p>
 
@@ -321,5 +321,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   <form action="" method="POST">
         <button type="submit" name="logout">Sair da Conta (Logout)</button>
     </form>
+  <div style="width: 55%; margin:auto; padding: 1%; display: flex; justify-content: center;">
+  <a href="index.php"><button type="submit">Ir para a Página dos Posts (Página Inicial)</button></a>
+  </div>
+  
+   
+   
 </body>
 </html>

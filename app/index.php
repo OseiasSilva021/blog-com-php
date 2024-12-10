@@ -148,7 +148,7 @@ $posts = $stmt->fetchAll(PDO::FETCH_ASSOC);
     <ul>
         <?php foreach ($posts as $post): ?>
             <li>
-                <h3><a href="post.php?id=<?= $post['id'] ?>"><?= htmlspecialchars($post['title']) ?></a></h3>
+                <h3><a href=""<?= $post['id'] ?>"><?= htmlspecialchars($post['title']) ?></a></h3>
                 <h4><?= htmlspecialchars($post['content']) ?></h4>
                 <p>Por <?= htmlspecialchars($post['username']) ?>, em <?= date('d/m/Y', strtotime($post['created_at'])) ?></p>
             </li>
