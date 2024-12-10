@@ -1,0 +1,29 @@
+version: '3.8'
+
+services:
+  php:
+    build:
+      context: .  # Diretório onde está o Dockerfile
+    container_name: php_container
+    volumes:
+      - ./app:/var/www/html  # Mapeia o diretório local para o contêiner
+    ports:
+      - "8000:80"  # Redireciona a porta 80 do contêiner para 8000 no host
+    depends_on:
+      - mysql  # Garante que o MySQL seja iniciado antes
+
+  mysql:
+    image: mysql:8.0  # Imagem oficial do MySQL
+    container_name: mysql_container
+    environment:
+      MYSQL_ROOT_PASSWORD: 1234
+      MYSQL_DATABASE: blogphp
+      MYSQL_USER: usuario
+      MYSQL_PASSWORD: 123456
+    ports:
+      - "3306:3306"  # Redireciona a porta 3306
+    volumes:
+      - mysql_data:/var/lib/mysql  # Persistência de dados
+
+volumes:
+  mysql_data:  # Volume para armazenar os dados do MySQL
