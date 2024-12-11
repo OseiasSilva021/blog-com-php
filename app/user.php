@@ -10,7 +10,7 @@ if (!isset($_SESSION['user_id'])) {
 $user_id = $_SESSION['user_id']; // Obtém o ID do usuário da sessão
 
 // Conexão com o banco de dados
-include ('db.php');
+include('db.php');
 
 // Buscar informações do usuário com o ID armazenado na sessão
 $stmt = $pdo->prepare("SELECT * FROM users WHERE id = :id");
@@ -258,6 +258,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['logout'])) {
         }
     }
 </style>
+
 </head>
 <body>
     <div class="user-info">
@@ -267,6 +268,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['logout'])) {
     </div>
 
     <h2>Posts de <?= htmlspecialchars($user['username']) ?></h2>
+
+    <!-- Formulário para criar novo post -->
+    <h2>Criar Novo Post</h2>
+    <form action="create_post.php" method="POST">
+        <label for="title">Título</label>
+        <input type="text" name="title" id="title" required>
+
+        <label for="content">Conteúdo</label>
+        <textarea name="content" id="content" required></textarea>
+
+        <button type="submit">Criar Post</button>
+    </form>
 
     <?php if (empty($posts)): ?>
         <p>Este usuário ainda não publicou nenhum post.</p>
@@ -331,4 +344,3 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['logout'])) {
     </div>
 </body>
 </html>
-
