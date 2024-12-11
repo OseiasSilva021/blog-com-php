@@ -124,6 +124,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['logout'])) {
     --box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
+img {
+   width: 100%;
+}
+
 body {
     font-family: Arial, sans-serif;
     background-color: var(--secondary-color);
@@ -273,7 +277,7 @@ input[type="text"]:focus, textarea:focus, select:focus, input[type="file"]:focus
 
 img {
     max-width: 150px;
-    border-radius: 50%;
+   
     margin: 10px 0;
 }
 
@@ -306,12 +310,13 @@ img {
     <div class="user-info">
         <h1>Perfil de <?= htmlspecialchars($user['username']) ?></h1>
         <p>Email: <?= htmlspecialchars($user['email']) ?></p>
-        <p>Membro desde: <?= date('d/m/Y', strtotime($user['created_at'])) ?></p>
+        <p>Data de hoje: <?= date('d/m/Y', strtotime($user['created_at'])) ?></p>
     </div>
-    <div>
-            <h3>Foto de Perfil</h3>
+    <div style=" width: 60%; margin: auto; display: flex; justify-content: center; flex-direction:column;">
+            <h2 style="text-align: center;">Foto de Perfil</h2>
+         
             <?php if (!empty($user['profile_picture'])): ?>
-                <img src="<?= htmlspecialchars($user['profile_picture']) ?>" alt="Foto de perfil" style="max-width: 150px; border-radius: 50%;">
+                <img src="<?= htmlspecialchars($user['profile_picture']) ?>" alt="Foto de perfil" style="max-width: 200px; margin:auto;">
             <?php else: ?>
                 <p>Você ainda não enviou uma foto de perfil.</p>
             <?php endif; ?>
