@@ -3,23 +3,27 @@ include('db.php');
 session_start();
 
 // Buscar todos os posts publicados
-$stmt = $pdo->prepare("SELECT posts.id, posts.title, posts.content, posts.created_at, users.username 
-FROM posts 
-INNER JOIN users ON posts.author_id = users.id 
-WHERE posts.status = 'published' 
-ORDER BY posts.created_at DESC");
+$stmt = $pdo->prepare(
+    "SELECT DISTINCT posts.id, posts.title, posts.content, posts.created_at, users.username 
+    FROM posts 
+    INNER JOIN users ON posts.author_id = users.id 
+    WHERE posts.status = 'published' 
+    ORDER BY posts.created_at DESC"
+);
 $stmt->execute();
 $posts = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
 // Buscar comentários de cada post
-foreach ($posts as &$post) {
-    $stmt_comments = $pdo->prepare("SELECT comments.content, comments.created_at, users.username 
-    FROM comments 
-    INNER JOIN users ON comments.user_id = users.id 
-    WHERE comments.post_id = :post_id");
+foreach ($posts as $key => $post) {
+    $stmt_comments = $pdo->prepare(
+        "SELECT comments.content, comments.created_at, users.username 
+        FROM comments 
+        INNER JOIN users ON comments.user_id = users.id 
+        WHERE comments.post_id = :post_id"
+    );
     $stmt_comments->bindParam(':post_id', $post['id']);
     $stmt_comments->execute();
-    $post['comments'] = $stmt_comments->fetchAll(PDO::FETCH_ASSOC);
+    $posts[$key]['comments'] = $stmt_comments->fetchAll(PDO::FETCH_ASSOC);
 }
 ?>
 
@@ -30,109 +34,109 @@ foreach ($posts as &$post) {
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Blog PHP</title>
 <style>
-
+/* Estilos */
 body {
-font-family: Arial, sans-serif;
-margin: 0;
-padding: 20px;
-background-color: #f4f4f4;
-color: #333;
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 20px;
+    background-color: #f4f4f4;
+    color: #333;
 }
 
 h1, h3 {
-color: #2c3e50;
-text-align: center;
+    color: #2c3e50;
+    text-align: center;
 }
 
 h1 {
-font-size: 2.5em;
-margin-bottom: 10px;
+    font-size: 2.5em;
+    margin-bottom: 10px;
 }
 
 h3 {
-font-size: 1.3em;
-margin-bottom: 30px;
+    font-size: 1.3em;
+    margin-bottom: 30px;
 }
 
 button {
-padding: 10px 20px;
-font-size: 16px;
-background-color: #007bff;
-color: white;
-border: none;
-cursor: pointer;
-border-radius: 5px;
-text-align: center;
-display: block;
-margin: 0 auto;
-transition: background-color 0.3s;
+    padding: 10px 20px;
+    font-size: 16px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    cursor: pointer;
+    border-radius: 5px;
+    text-align: center;
+    display: block;
+    margin: 0 auto;
+    transition: background-color 0.3s;
 }
 
 button:hover {
-background-color: #0056b3;
+    background-color: #0056b3;
 }
 
 a {
-text-decoration: none;
+    text-decoration: none;
 }
 
 ul {
-list-style-type: none;
-padding: 0;
-max-width: 800px;
-margin: 0 auto;
+    list-style-type: none;
+    padding: 0;
+    max-width: 800px;
+    margin: 0 auto;
 }
 
 li {
-background-color: white;
-border-radius: 8px;
-box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-margin-bottom: 20px;
-padding: 20px;
-transition: transform 0.3s;
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    margin-bottom: 20px;
+    padding: 20px;
+    transition: transform 0.3s;
 }
 
 li:hover {
-transform: translateY(-5px);
+    transform: translateY(-5px);
 }
 
 li h3 {
-margin-top: 0;
-font-size: 1.8em;
-color: #007bff;
+    margin-top: 0;
+    font-size: 1.8em;
+    color: #007bff;
 }
 
 li h4 {
-font-size: 1.1em;
-color: #7f8c8d;
-margin: 10px 0;
+    font-size: 1.1em;
+    color: #7f8c8d;
+    margin: 10px 0;
 }
 
 li p {
-font-size: 0.9em;
-color: #95a5a6;
+    font-size: 0.9em;
+    color: #95a5a6;
 }
 
 @media (max-width: 768px) {
-body {
-padding: 10px;
-}
+    body {
+        padding: 10px;
+    }
 
-h1 {
-font-size: 2em;
-}
+    h1 {
+        font-size: 2em;
+    }
 
-h3 {
-font-size: 1.1em;
-}
+    h3 {
+        font-size: 1.1em;
+    }
 
-ul {
-padding: 0 10px;
-}
+    ul {
+        padding: 0 10px;
+    }
 
-li {
-padding: 15px;
-}
+    li {
+        padding: 15px;
+    }
 }
 </style>
 </head>
@@ -140,15 +144,15 @@ padding: 15px;
 <h1>Seja bem-vindo ao Blog!</h1>
 <h3>Aqui você verá as postagens criadas pelos usuários autenticados. Caso queira criar posts, autentique-se.</h3>
 <a href="registro.php"><button>Página de Registro</button></a>
-<a href="user.php" style="margin: 1%;"><button>Vá para a Página do Usuário (caso já esteja logado)</button> </a>
+<a href="user.php" style="margin: 1%;"><button>Vá para a Página do Usuário (caso já esteja logado)</button></a>
 
 <?php if (empty($posts)): ?>
     <p>Ainda não há posts publicados.</p>
 <?php else: ?>
     <ul>
-        <?php foreach ($posts as $post): ?>
+        <?php foreach ($posts as $index => $post): ?>
             <li>
-                <h3><a href="post.php?id=<?= $post['id'] ?>"><?= htmlspecialchars($post['title']) ?></a></h3>
+                <h3><a href="post.php?id=<?= $post['id'] ?>">[Post <?= $index + 1 ?>] <?= htmlspecialchars($post['title']) ?></a></h3>
                 <h4><?= htmlspecialchars($post['content']) ?></h4>
                 <p>Por <?= htmlspecialchars($post['username']) ?>, em <?= date('d/m/Y', strtotime($post['created_at'])) ?></p>
 

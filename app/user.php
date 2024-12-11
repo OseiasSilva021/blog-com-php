@@ -38,37 +38,31 @@ $posts = $stmt->fetchAll(PDO::FETCH_ASSOC);
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_post_id'])) {
     $post_id = $_POST['delete_post_id'];
 
-    // Preparar a consulta para excluir o post
-    $stmt = $pdo->prepare("DELETE FROM posts WHERE id = :post_id AND author_id = :user_id");
-    $stmt->bindParam(':post_id', $post_id, PDO::PARAM_INT);
-    $stmt->bindParam(':user_id', $user_id, PDO::PARAM_INT);
+    // Iniciar transação
+    $pdo->beginTransaction();
 
-    // Executar a consulta
-    if ($stmt->execute()) {
+    try {
+        // Excluir comentários do post
+        $stmt = $pdo->prepare("DELETE FROM comments WHERE post_id = :post_id");
+        $stmt->bindParam(':post_id', $post_id, PDO::PARAM_INT);
+        $stmt->execute();
+
+        // Excluir o post
+        $stmt = $pdo->prepare("DELETE FROM posts WHERE id = :post_id AND author_id = :user_id");
+        $stmt->bindParam(':post_id', $post_id, PDO::PARAM_INT);
+        $stmt->bindParam(':user_id', $user_id, PDO::PARAM_INT);
+        $stmt->execute();
+
+        // Confirmar a transação
+        $pdo->commit();
+
         // Redirecionar para evitar reenvio de formulário
         header("Location: user.php");
         exit();
-    } else {
-        echo "Erro ao deletar o post.";
-    }
-}
-
-// Deletar comentário
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_comment_id'])) {
-    $comment_id = $_POST['delete_comment_id'];
-
-    // Preparar a consulta para excluir o comentário
-    $stmt = $pdo->prepare("DELETE FROM comments WHERE id = :comment_id AND post_id IN (SELECT id FROM posts WHERE author_id = :user_id)");
-    $stmt->bindParam(':comment_id', $comment_id, PDO::PARAM_INT);
-    $stmt->bindParam(':user_id', $user_id, PDO::PARAM_INT);
-
-    // Executar a consulta
-    if ($stmt->execute()) {
-        // Redirecionar para evitar reenvio de formulário
-        header("Location: user.php");
-        exit();
-    } else {
-        echo "Erro ao deletar o comentário.";
+    } catch (Exception $e) {
+        // Reverter a transação em caso de erro
+        $pdo->rollBack();
+        echo "Erro ao deletar o post: " . $e->getMessage();
     }
 }
 
@@ -80,6 +74,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['logout'])) {
     exit();
 }
 ?>
+
 
 <!DOCTYPE html>
 <html lang="pt-br">
