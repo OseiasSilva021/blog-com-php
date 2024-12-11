@@ -18,13 +18,6 @@ $stmt->bindParam(':id', $user_id, PDO::PARAM_INT);
 $stmt->execute();
 $user = $stmt->fetch(PDO::FETCH_ASSOC);
 
-
-if (isset($_POST['logout'])) {
-    session_destroy(); // Destrói a sessão
-    header("Location: login.php"); // Redireciona para a página de login (ou outra página)
-    exit();
-}
-
 // Se o usuário não existir, exibe uma mensagem
 if (!$user) {
     echo "Usuário não encontrado.";
@@ -32,7 +25,7 @@ if (!$user) {
 }
 
 // Buscar os posts do usuário
-$stmt = $pdo->prepare("SELECT posts.id, posts.title, posts.content, posts.created_at 
+$stmt = $pdo->prepare("SELECT posts.id, posts.title, posts.content, posts.created_at, posts.author_id 
                        FROM posts 
                        WHERE posts.author_id = :user_id 
                        AND posts.status = 'published' 
@@ -41,52 +34,51 @@ $stmt->bindParam(':user_id', $user_id, PDO::PARAM_INT);
 $stmt->execute();
 $posts = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    // Verificar se o post está sendo criado
-    if (isset($_POST['title'], $_POST['content'])) {
-        $title = $_POST['title'] ?? '';
-        $content = $_POST['content'] ?? '';
-        $status = $_POST['status'] ?? 'draft';
+// Verificar se o post está sendo deletado
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_post_id'])) {
+    $post_id = $_POST['delete_post_id'];
 
-        // Validar os dados
-        if (empty($title) || empty($content)) {
-            echo "Título e conteúdo são obrigatórios!";
-        } else {
-            // Inserir o post no banco de dados
-            $stmt = $pdo->prepare("INSERT INTO posts (title, content, author_id, status) VALUES (:title, :content, :author_id, :status)");
-            $stmt->bindParam(':title', $title);
-            $stmt->bindParam(':content', $content);
-            $stmt->bindParam(':author_id', $user_id);
-            $stmt->bindParam(':status', $status);
-            $stmt->execute();
+    // Preparar a consulta para excluir o post
+    $stmt = $pdo->prepare("DELETE FROM posts WHERE id = :post_id AND author_id = :user_id");
+    $stmt->bindParam(':post_id', $post_id, PDO::PARAM_INT);
+    $stmt->bindParam(':user_id', $user_id, PDO::PARAM_INT);
 
-            echo "Post criado com sucesso!";
-        }
-    }
-
-    // Verificar se o post está sendo deletado
-    if (isset($_POST['delete_post_id'])) {
-        $post_id = $_POST['delete_post_id'];
-
-        // Preparar a consulta para excluir o post
-        $stmt = $pdo->prepare("DELETE FROM posts WHERE id = :post_id AND author_id = :user_id");
-        $stmt->bindParam(':post_id', $post_id, PDO::PARAM_INT);
-        $stmt->bindParam(':user_id', $user_id, PDO::PARAM_INT);
-
-        // Executar a consulta
-        if ($stmt->execute()) {
-            // Redirecionar para evitar reenvio de formulário e não mostrar mensagens de sucesso/erro após redirecionamento
-            header("Location: user.php");
-            exit();
-        } else {
-            echo "Erro ao deletar o post.";
-        }
+    // Executar a consulta
+    if ($stmt->execute()) {
+        // Redirecionar para evitar reenvio de formulário
+        header("Location: user.php");
+        exit();
+    } else {
+        echo "Erro ao deletar o post.";
     }
 }
 
+// Deletar comentário
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_comment_id'])) {
+    $comment_id = $_POST['delete_comment_id'];
 
-  
-    
+    // Preparar a consulta para excluir o comentário
+    $stmt = $pdo->prepare("DELETE FROM comments WHERE id = :comment_id AND post_id IN (SELECT id FROM posts WHERE author_id = :user_id)");
+    $stmt->bindParam(':comment_id', $comment_id, PDO::PARAM_INT);
+    $stmt->bindParam(':user_id', $user_id, PDO::PARAM_INT);
+
+    // Executar a consulta
+    if ($stmt->execute()) {
+        // Redirecionar para evitar reenvio de formulário
+        header("Location: user.php");
+        exit();
+    } else {
+        echo "Erro ao deletar o comentário.";
+    }
+}
+
+// Logout
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['logout'])) {
+    session_unset(); // Limpa todas as variáveis de sessão
+    session_destroy(); // Destroi a sessão
+    header("Location: login.php"); // Redireciona para a página de login
+    exit();
+}
 ?>
 
 <!DOCTYPE html>
@@ -266,10 +258,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
     }
 </style>
-
 </head>
 <body>
-
     <div class="user-info">
         <h1>Perfil de <?= htmlspecialchars($user['username']) ?></h1>
         <p>Email: <?= htmlspecialchars($user['email']) ?></p>
@@ -283,49 +273,62 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <?php else: ?>
         <ul class="post-list">
         <?php foreach ($posts as $post): ?>
-    <li>
-        <h3><a href=""<?= $post['id'] ?>"><?= htmlspecialchars($post['title']) ?></a></h3>
-        <h4><?= htmlspecialchars($post['content']) ?></h4>
-        <p>Publicado em: <?= date('d/m/Y H:i', strtotime($post['created_at'])) ?></p>
+        <li>
+            <h3><a href="post.php?id=<?= $post['id'] ?>"><?= htmlspecialchars($post['title']) ?></a></h3>
+            <h4><?= htmlspecialchars($post['content']) ?></h4>
+            <p>Publicado em: <?= date('d/m/Y H:i', strtotime($post['created_at'])) ?></p>
 
-        <!-- Formulário de exclusão -->
-        <form action="" method="POST" onsubmit="return confirm('Você tem certeza que deseja excluir este post?');">
-            <input type="hidden" name="delete_post_id" value="<?= $post['id'] ?>">
-            <button type="submit">Deletar Post</button>
-        </form>
-    </li>
-<?php endforeach; ?>
+            <!-- Formulário de exclusão do post -->
+            <form action="" method="POST" onsubmit="return confirm('Você tem certeza que deseja excluir este post?');">
+                <input type="hidden" name="delete_post_id" value="<?= $post['id'] ?>">
+                <button type="submit">Deletar Post</button>
+            </form>
+
+            <!-- Exibir comentários -->
+            <h4>Comentários:</h4>
+            <?php
+                // Buscar comentários do post
+                $stmt_comments = $pdo->prepare("SELECT comments.id, comments.content, comments.created_at, users.username 
+                                                FROM comments 
+                                                INNER JOIN users ON comments.user_id = users.id 
+                                                WHERE comments.post_id = :post_id");
+                $stmt_comments->bindParam(':post_id', $post['id']);
+                $stmt_comments->execute();
+                $comments = $stmt_comments->fetchAll(PDO::FETCH_ASSOC);
+            ?>
+
+            <?php if (empty($comments)): ?>
+                <p>Este post ainda não tem comentários.</p>
+            <?php else: ?>
+                <ul>
+                    <?php foreach ($comments as $comment): ?>
+                    <li>
+                        <p><strong><?= htmlspecialchars($comment['username']) ?>:</strong> <?= htmlspecialchars($comment['content']) ?></p>
+                        <p><small>Em <?= date('d/m/Y', strtotime($comment['created_at'])) ?></small></p>
+
+                        <!-- Formulário de exclusão do comentário -->
+                        <form action="" method="POST" onsubmit="return confirm('Você tem certeza que deseja excluir este comentário?');">
+                            <input type="hidden" name="delete_comment_id" value="<?= $comment['id'] ?>">
+                            <button type="submit">Deletar Comentário</button>
+                        </form>
+                    </li>
+                    <?php endforeach; ?>
+                </ul>
+            <?php endif; ?>
+
+        </li>
+        <?php endforeach; ?>
         </ul>
     <?php endif; ?>
 
+    <!-- Formulário de logout -->
     <form action="" method="POST">
-    <label for="title">Título:</label>
-    <input type="text" name="title" id="title" required>
-    <br><br>
-    
-    <label for="content">Conteúdo:</label>
-    <textarea name="content" id="content" required></textarea>
-    <br><br>
-
-    <label for="status">Status:</label>
-    <select name="status" id="status">
-        <option value="draft">Rascunho</option>
-        <option value="published">Publicado</option>
-    </select>
-    <br><br>
-
-    <button type="submit">Criar Post</button>
-</form>
-
-  <!-- Formulário de logout -->
-  <form action="" method="POST">
         <button type="submit" name="logout">Sair da Conta (Logout)</button>
     </form>
-  <div style="width: 55%; margin:auto; padding: 1%; display: flex; justify-content: center;">
-  <a href="index.php"><button type="submit">Ir para a Página dos Posts (Página Inicial)</button></a>
-  </div>
-  
-   
-   
+
+    <div style="width: 55%; margin:auto; padding: 1%; display: flex; justify-content: center;">
+        <a href="index.php"><button type="submit">Ir para a Página dos Posts (Página Inicial)</button></a>
+    </div>
 </body>
 </html>
+

@@ -140,6 +140,7 @@ padding: 15px;
 <h1>Seja bem-vindo ao Blog!</h1>
 <h3>Aqui você verá as postagens criadas pelos usuários autenticados. Caso queira criar posts, autentique-se.</h3>
 <a href="registro.php"><button>Página de Registro</button></a>
+<a href="user.php" style="margin: 1%;"><button>Vá para a Página do Usuário (caso já esteja logado)</button> </a>
 
 <?php if (empty($posts)): ?>
     <p>Ainda não há posts publicados.</p>
