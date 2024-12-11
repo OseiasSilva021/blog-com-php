@@ -136,7 +136,7 @@ $comments = $stmt_comments->fetchAll(PDO::FETCH_ASSOC);
         resize: vertical;
     }
 
-    .comment-form button {
+    .comment-form button, button{
         padding: 10px 20px;
         background-color: #007bff;
         color: #fff;
@@ -147,7 +147,7 @@ $comments = $stmt_comments->fetchAll(PDO::FETCH_ASSOC);
         transition: background-color 0.3s;
     }
 
-    .comment-form button:hover {
+    .comment-form button:hover, button:hover {
         background-color: #0056b3;
     }
 
@@ -216,5 +216,8 @@ $comments = $stmt_comments->fetchAll(PDO::FETCH_ASSOC);
     <p>Faça login para comentar.</p>
 <?php endif; ?>
 
+<div style="width: 55%; margin:auto; padding: 1%; display: flex; justify-content: center;">
+        <a href="index.php"><button>Ir para a Página dos Posts (Página Inicial)</button></a>
+    </div>
 </body>
 </html>

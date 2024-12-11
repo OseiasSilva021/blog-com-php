@@ -32,15 +32,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $error = "Usuário não encontrado!";
         }
     }
-    // No login.php, após a validação da senha:
-$_SESSION['user_id'] = $user['id'];
-$_SESSION['username'] = $user['username'];
-header("Location: user.php"); // Sem o ?id=...
-exit;
-
 }
-
 ?>
+
 
 <!DOCTYPE html>
 <html lang="en">
