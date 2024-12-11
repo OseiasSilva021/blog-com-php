@@ -23,6 +23,37 @@ if (!$user) {
     echo "Usuário não encontrado.";
     exit;
 }
+// Processar upload da foto de perfil
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['profile_picture'])) {
+    $upload_dir = 'uploads/'; // Diretório para salvar as imagens
+    if (!is_dir($upload_dir)) {
+        mkdir($upload_dir, 0777, true);
+    }
+
+    $file_name = basename($_FILES['profile_picture']['name']);
+    $target_file = $upload_dir . $user_id . '_' . $file_name;
+
+    // Validar e mover o arquivo
+    $file_type = strtolower(pathinfo($target_file, PATHINFO_EXTENSION));
+    $valid_types = ['jpg', 'jpeg', 'png', 'gif'];
+
+    if (in_array($file_type, $valid_types) && $_FILES['profile_picture']['size'] <= 2 * 1024 * 1024) { // 2 MB limite
+        if (move_uploaded_file($_FILES['profile_picture']['tmp_name'], $target_file)) {
+            // Atualizar o caminho da foto no banco de dados
+            $stmt = $pdo->prepare("UPDATE users SET profile_picture = :profile_picture WHERE id = :id");
+            $stmt->bindParam(':profile_picture', $target_file);
+            $stmt->bindParam(':id', $user_id, PDO::PARAM_INT);
+            $stmt->execute();
+
+            header("Location: user.php"); // Atualizar a página
+            exit;
+        } else {
+            echo "Erro ao fazer o upload da foto.";
+        }
+    } else {
+        echo "Formato de arquivo inválido ou tamanho excedido.";
+    }
+}
 
 // Buscar os posts do usuário
 $stmt = $pdo->prepare("SELECT posts.id, posts.title, posts.content, posts.created_at, posts.author_id 
@@ -261,6 +292,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['logout'])) {
         <p>Email: <?= htmlspecialchars($user['email']) ?></p>
         <p>Membro desde: <?= date('d/m/Y', strtotime($user['created_at'])) ?></p>
     </div>
+    <div>
+            <h3>Foto de Perfil</h3>
+            <?php if (!empty($user['profile_picture'])): ?>
+                <img src="<?= htmlspecialchars($user['profile_picture']) ?>" alt="Foto de perfil" style="max-width: 150px; border-radius: 50%;">
+            <?php else: ?>
+                <p>Você ainda não enviou uma foto de perfil.</p>
+            <?php endif; ?>
+        </div>
+    </div>
+
+    <!-- Formulário de Upload de Foto -->
+    <form action="" method="POST" enctype="multipart/form-data">
+        <label for="profile_picture">Alterar Foto de Perfil:</label>
+        <input type="file" name="profile_picture" id="profile_picture" accept="image/*" required>
+        <button type="submit">Salvar Foto</button>
+    </form>
 
     <h2>Posts de <?= htmlspecialchars($user['username']) ?></h2>
 

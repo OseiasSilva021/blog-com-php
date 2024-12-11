@@ -25,6 +25,17 @@ foreach ($posts as $key => $post) {
     $stmt_comments->execute();
     $posts[$key]['comments'] = $stmt_comments->fetchAll(PDO::FETCH_ASSOC);
 }
+
+if (isset($_SESSION['user_id'])) {
+    $stmt = $pdo->prepare("SELECT profile_picture FROM users WHERE id = :id");
+    $stmt->bindParam(':id', $_SESSION['user_id'], PDO::PARAM_INT);
+    $stmt->execute();
+    $profile_picture = $stmt->fetchColumn();
+
+    if ($profile_picture) {
+        echo "<img src='" . htmlspecialchars($profile_picture) . "' alt='Foto de perfil' style='width: 70px; border-radius: 50%;'>";
+    }
+}
 ?>
 
 <!DOCTYPE html>
