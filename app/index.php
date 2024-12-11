@@ -45,46 +45,47 @@ if (isset($_SESSION['user_id'])) {
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Blog PHP</title>
 <style>
-/* Estilos */
+/* Estilos Gerais */
 body {
-    font-family: Arial, sans-serif;
+    font-family: 'Roboto', Arial, sans-serif;
     margin: 0;
     padding: 20px;
-    background-color: #f4f4f4;
-    color: #333;
+    background: linear-gradient(to bottom, #f8f9fa, #e9ecef);
+    color: #343a40;
 }
 
 h1, h3 {
-    color: #2c3e50;
+    color: #495057;
     text-align: center;
 }
 
 h1 {
-    font-size: 2.5em;
-    margin-bottom: 10px;
+    font-size: 2.8em;
+    margin-bottom: 15px;
 }
 
 h3 {
-    font-size: 1.3em;
-    margin-bottom: 30px;
+    font-size: 1.5em;
+    margin-bottom: 25px;
 }
 
 button {
-    padding: 10px 20px;
+    padding: 10px 25px;
     font-size: 16px;
-    background-color: #007bff;
+    background: linear-gradient(to right, #007bff, #0056b3);
     color: white;
     border: none;
+    border-radius: 50px;
     cursor: pointer;
-    border-radius: 5px;
     text-align: center;
-    display: block;
-    margin: 0 auto;
-    transition: background-color 0.3s;
+    display: inline-block;
+    margin: 10px auto;
+    transition: all 0.3s ease;
 }
 
 button:hover {
-    background-color: #0056b3;
+    background: linear-gradient(to right, #0056b3, #003f8a);
+    transform: scale(1.05);
 }
 
 a {
@@ -94,51 +95,84 @@ a {
 ul {
     list-style-type: none;
     padding: 0;
-    max-width: 800px;
+    max-width: 900px;
     margin: 0 auto;
 }
 
 li {
-    background-color: white;
-    border-radius: 8px;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-    margin-bottom: 20px;
-    padding: 20px;
-    transition: transform 0.3s;
+    background: #ffffff;
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    margin-bottom: 25px;
+    padding: 25px;
+    transition: transform 0.3s, box-shadow 0.3s;
 }
 
 li:hover {
-    transform: translateY(-5px);
+    transform: translateY(-8px);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
 }
 
 li h3 {
     margin-top: 0;
-    font-size: 1.8em;
+    font-size: 2em;
     color: #007bff;
+    text-decoration: none;
 }
 
 li h4 {
-    font-size: 1.1em;
-    color: #7f8c8d;
-    margin: 10px 0;
+    font-size: 1.2em;
+    color: #6c757d;
+    margin: 15px 0;
 }
 
 li p {
-    font-size: 0.9em;
-    color: #95a5a6;
+    font-size: 1em;
+    color: #868e96;
+    line-height: 1.6;
+}
+
+textarea {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ced4da;
+    border-radius: 8px;
+    margin-top: 10px;
+    font-size: 14px;
+    resize: none;
+}
+
+textarea:focus {
+    border-color: #007bff;
+    outline: none;
+    box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+}
+
+form button {
+    margin-top: 10px;
+    width: 100%;
+}
+
+img {
+    display: block;
+    margin: 0 auto 20px;
+    border-radius: 50%;
+    width: 70px;
+    height: 70px;
+    object-fit: cover;
 }
 
 @media (max-width: 768px) {
     body {
-        padding: 10px;
+        padding: 15px;
     }
 
     h1 {
-        font-size: 2em;
+        font-size: 2.2em;
     }
 
     h3 {
-        font-size: 1.1em;
+        font-size: 1.2em;
     }
 
     ul {
@@ -146,10 +180,16 @@ li p {
     }
 
     li {
-        padding: 15px;
+        padding: 20px;
+    }
+
+    button {
+        font-size: 14px;
+        padding: 8px 20px;
     }
 }
 </style>
+
 </head>
 <body>
 <h1>Seja bem-vindo ao Blog!</h1>

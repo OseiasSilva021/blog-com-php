@@ -113,177 +113,193 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['logout'])) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Perfil de <?= htmlspecialchars($user['username']) ?> - Blog PHP</title>
-    <style>
-    body {
-        font-family: Arial, sans-serif;
-        background-color: #f4f4f4;
-        margin: 0;
-        padding: 20px;
-        color: #333;
-    }
+  <style>
+    :root {
+    --primary-color: #007bff;
+    --primary-hover: #0056b3;
+    --secondary-color: #f4f4f4;
+    --text-color: #333;
+    --heading-color: #2c3e50;
+    --border-radius: 8px;
+    --box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
 
-    h1, h2 {
-        text-align: center;
-        color: #2c3e50;
+body {
+    font-family: Arial, sans-serif;
+    background-color: var(--secondary-color);
+    margin: 0;
+    padding: 20px;
+    color: var(--text-color);
+}
+
+h1, h2 {
+    text-align: center;
+    color: var(--heading-color);
+    margin-bottom: 20px;
+}
+
+h1 {
+    font-size: 2.5em;
+}
+
+h2 {
+    font-size: 1.8em;
+    margin-top: 30px;
+}
+
+.user-info {
+    background-color: #ffffff;
+    padding: 20px;
+    margin-bottom: 20px;
+    box-shadow: var(--box-shadow);
+    border-radius: var(--border-radius);
+}
+
+.user-info p {
+    margin: 8px 0;
+    font-size: 1.1em;
+    color: var(--text-color);
+}
+
+.post-list {
+    list-style-type: none;
+    padding: 0;
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.post-list li {
+    background-color: #ffffff;
+    padding: 15px;
+    margin-bottom: 20px;
+    border-radius: var(--border-radius);
+    box-shadow: var(--box-shadow);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.post-list li:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.post-list h3 {
+    font-size: 1.6em;
+    margin-top: 0;
+    color: var(--primary-color);
+}
+
+.post-list h4 {
+    font-size: 1.1em;
+    color: #7f8c8d;
+    margin: 10px 0;
+}
+
+.post-list p {
+    font-size: 0.9em;
+    color: #95a5a6;
+}
+
+.post-list a {
+    color: var(--primary-color);
+    text-decoration: none;
+}
+
+.post-list a:hover {
+    text-decoration: underline;
+}
+
+button {
+    padding: 10px 15px;
+    font-size: 16px;
+    background-color: var(--primary-color);
+    color: white;
+    border: none;
+    cursor: pointer;
+    border-radius: var(--border-radius);
+    transition: background-color 0.3s;
+}
+
+button:hover {
+    background-color: var(--primary-hover);
+}
+
+form {
+    background-color: #ffffff;
+    padding: 20px;
+    margin-top: 30px;
+    box-shadow: var(--box-shadow);
+    border-radius: var(--border-radius);
+    max-width: 800px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+label {
+    font-size: 1.1em;
+    display: block;
+    margin-bottom: 5px;
+    color: var(--text-color);
+}
+
+input[type="text"], textarea, select, input[type="file"] {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 20px;
+    border: 1px solid #ccc;
+    border-radius: var(--border-radius);
+    font-size: 1em;
+}
+
+textarea {
+    resize: vertical;
+    min-height: 150px;
+}
+
+input[type="text"]:focus, textarea:focus, select:focus, input[type="file"]:focus {
+    border-color: var(--primary-color);
+    outline: none;
+    box-shadow: 0 0 5px var(--primary-color);
+}
+
+.form-actions {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.delete-form {
+    display: inline-block;
+}
+
+img {
+    max-width: 150px;
+    border-radius: 50%;
+    margin: 10px 0;
+}
+
+@media (max-width: 768px) {
+    body {
+        padding: 10px;
     }
 
     h1 {
-        font-size: 2.5em;
-        margin-bottom: 10px;
+        font-size: 2em;
     }
 
     h2 {
-        font-size: 1.8em;
-        margin-top: 40px;
-        margin-bottom: 20px;
+        font-size: 1.5em;
     }
 
-    .user-info {
-        background-color: #ffffff;
-        padding: 20px;
-        margin-bottom: 20px;
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-        border-radius: 8px;
-    }
-
-    .user-info p {
-        margin: 5px 0;
-        font-size: 1.1em;
-    }
-
-    .post-list {
-        list-style-type: none;
-        padding: 0;
-        max-width: 800px;
-        margin: 0 auto;
+    .user-info, .post-list, form {
+        padding: 15px;
     }
 
     .post-list li {
-        background-color: #ffffff;
-        padding: 15px;
-        margin-bottom: 20px;
-        border-radius: 8px;
-        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-        transition: transform 0.2s ease;
+        padding: 12px;
     }
+}
 
-    .post-list li:hover {
-        transform: translateY(-5px);
-    }
-
-    .post-list h3 {
-        font-size: 1.6em;
-        margin-top: 0;
-        color: #007bff;
-    }
-
-    .post-list h4 {
-        font-size: 1.1em;
-        color: #7f8c8d;
-        margin: 10px 0;
-    }
-
-    .post-list p {
-        font-size: 0.9em;
-        color: #95a5a6;
-    }
-
-    .post-list a {
-        color: #007bff;
-        text-decoration: none;
-    }
-
-    .post-list a:hover {
-        text-decoration: underline;
-    }
-
-    button {
-        padding: 10px 15px;
-        font-size: 16px;
-        background-color: #007bff;
-        color: white;
-        border: none;
-        cursor: pointer;
-        border-radius: 5px;
-        transition: background-color 0.3s;
-    }
-
-    button:hover {
-        background-color: #0056b3;
-    }
-
-    form {
-        background-color: #ffffff;
-        padding: 20px;
-        margin-top: 30px;
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-        border-radius: 8px;
-        max-width: 800px;
-        margin-left: auto;
-        margin-right: auto;
-    }
-
-    label {
-        font-size: 1.1em;
-        display: block;
-        margin-bottom: 5px;
-    }
-
-    input[type="text"], textarea, select {
-        width: 100%;
-        padding: 10px;
-        margin-bottom: 20px;
-        border: 1px solid #ccc;
-        border-radius: 5px;
-        font-size: 1em;
-    }
-
-    textarea {
-        resize: vertical;
-        min-height: 150px;
-    }
-
-    input[type="text"]:focus, textarea:focus, select:focus {
-        border-color: #007bff;
-        outline: none;
-    }
-
-    .form-actions {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-    }
-
-    .form-actions button {
-        width: auto;
-    }
-
-    .delete-form {
-        display: inline-block;
-    }
-
-    @media (max-width: 768px) {
-        body {
-            padding: 10px;
-        }
-
-        h1 {
-            font-size: 2em;
-        }
-
-        h2 {
-            font-size: 1.5em;
-        }
-
-        .user-info, .post-list, form {
-            padding: 15px;
-        }
-
-        .post-list li {
-            padding: 12px;
-        }
-    }
-</style>
+  </style>
 
 </head>
 <body>
