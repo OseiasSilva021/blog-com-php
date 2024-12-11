@@ -1,6 +1,6 @@
 <?php
-include ('db.php');
-
+include('db.php');
+session_start();
 
 // Buscar todos os posts publicados
 $stmt = $pdo->prepare("SELECT posts.id, posts.title, posts.content, posts.created_at, users.username 
@@ -10,10 +10,18 @@ WHERE posts.status = 'published'
 ORDER BY posts.created_at DESC");
 $stmt->execute();
 $posts = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+// Buscar comentários de cada post
+foreach ($posts as &$post) {
+    $stmt_comments = $pdo->prepare("SELECT comments.content, comments.created_at, users.username 
+    FROM comments 
+    INNER JOIN users ON comments.user_id = users.id 
+    WHERE comments.post_id = :post_id");
+    $stmt_comments->bindParam(':post_id', $post['id']);
+    $stmt_comments->execute();
+    $post['comments'] = $stmt_comments->fetchAll(PDO::FETCH_ASSOC);
+}
 ?>
-
-
-
 
 <!DOCTYPE html>
 <html lang="en">
@@ -127,34 +135,50 @@ padding: 15px;
 }
 }
 </style>
-
-</style>
 </head>
 <body>
-<h1>
-Seja bem vindo ao Blog!
-</h1>
-<h3>
-Aqui você verá as postagens criadas pelos usuários autenticados. Caso você queira criar posts, autentique-se.
-</h3>
+<h1>Seja bem-vindo ao Blog!</h1>
+<h3>Aqui você verá as postagens criadas pelos usuários autenticados. Caso queira criar posts, autentique-se.</h3>
 <a href="registro.php"><button>Página de Registro</button></a>
 
-
-
 <?php if (empty($posts)): ?>
-<p>Ainda não há posts publicados.</p>
+    <p>Ainda não há posts publicados.</p>
 <?php else: ?>
-<ul>
-<?php foreach ($posts as $post): ?>
-<li>
-<h3><a href=""<?= $post['id'] ?>"><?= htmlspecialchars($post['title']) ?></a></h3>
-<h4><?= htmlspecialchars($post['content']) ?></h4>
-<p>Por <?= htmlspecialchars($post['username']) ?>, em <?= date('d/m/Y', strtotime($post['created_at'])) ?></p>
-</li>
-<?php endforeach; ?>
-</ul>
+    <ul>
+        <?php foreach ($posts as $post): ?>
+            <li>
+                <h3><a href="post.php?id=<?= $post['id'] ?>"><?= htmlspecialchars($post['title']) ?></a></h3>
+                <h4><?= htmlspecialchars($post['content']) ?></h4>
+                <p>Por <?= htmlspecialchars($post['username']) ?>, em <?= date('d/m/Y', strtotime($post['created_at'])) ?></p>
+
+                <!-- Exibir Comentários -->
+                <h4>Comentários:</h4>
+                <?php if (empty($post['comments'])): ?>
+                    <p>Este post ainda não tem comentários.</p>
+                <?php else: ?>
+                    <ul>
+                        <?php foreach ($post['comments'] as $comment): ?>
+                            <li>
+                                <p><strong><?= htmlspecialchars($comment['username']) ?>:</strong> <?= htmlspecialchars($comment['content']) ?></p>
+                                <p><small>Em <?= date('d/m/Y', strtotime($comment['created_at'])) ?></small></p>
+                            </li>
+                        <?php endforeach; ?>
+                    </ul>
+                <?php endif; ?>
+
+                <!-- Formulário de Comentário -->
+                <?php if (isset($_SESSION['user_id'])): ?>
+                    <form action="comment.php" method="POST">
+                        <textarea name="content" placeholder="Escreva seu comentário..." required></textarea><br>
+                        <input type="hidden" name="post_id" value="<?= $post['id'] ?>">
+                        <button type="submit">Comentar</button>
+                    </form>
+                <?php else: ?>
+                    <p>Faça login para comentar.</p>
+                <?php endif; ?>
+            </li>
+        <?php endforeach; ?>
+    </ul>
 <?php endif; ?>
 </body>
 </html>
-
-
