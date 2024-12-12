@@ -44,8 +44,9 @@ if (isset($_SESSION['user_id'])) {
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Blog PHP</title>
+
 <style>
-/* Estilos Gerais */
+    /* Estilos Gerais */
 body {
     font-family: 'Roboto', Arial, sans-serif;
     margin: 0;
@@ -106,6 +107,10 @@ li {
     margin-bottom: 25px;
     padding: 25px;
     transition: transform 0.3s, box-shadow 0.3s;
+    overflow: hidden; /* Adiciona para prevenir o vazamento de conteúdo */
+    text-overflow: ellipsis; /* Limita o texto com reticências se necessário */
+    word-wrap: break-word; /* Quebra palavras longas */
+    max-height: 800px; /* Limita a altura máxima */
 }
 
 li:hover {
@@ -124,12 +129,15 @@ li h4 {
     font-size: 1.2em;
     color: #6c757d;
     margin: 15px 0;
+    word-wrap: break-word; /* Quebra palavras longas */
 }
 
 li p {
     font-size: 1em;
     color: #868e96;
     line-height: 1.6;
+    word-wrap: break-word; /* Quebra palavras longas */
+    overflow-wrap: break-word; /* Quebra palavras longas */
 }
 
 textarea {
@@ -188,6 +196,7 @@ img {
         padding: 8px 20px;
     }
 }
+
 </style>
 
 </head>

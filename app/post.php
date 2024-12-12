@@ -34,147 +34,159 @@ $comments = $stmt_comments->fetchAll(PDO::FETCH_ASSOC);
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title><?= htmlspecialchars($post['title']) ?></title>
+
 <style>
-    /* Estilos gerais */
+    /* Estilos Gerais */
+body {
+    font-family: 'Roboto', Arial, sans-serif;
+    margin: 0;
+    padding: 20px;
+    background: linear-gradient(to bottom, #f8f9fa, #e9ecef);
+    color: #343a40;
+}
+
+h1, h3 {
+    color: #495057;
+    text-align: center;
+}
+
+h1 {
+    font-size: 2.8em;
+    margin-bottom: 15px;
+}
+
+h3 {
+    font-size: 1.5em;
+    margin-bottom: 25px;
+}
+
+button {
+    padding: 10px 25px;
+    font-size: 16px;
+    background: linear-gradient(to right, #007bff, #0056b3);
+    color: white;
+    border: none;
+    border-radius: 50px;
+    cursor: pointer;
+    text-align: center;
+    display: inline-block;
+    margin: 10px auto;
+    transition: all 0.3s ease;
+}
+
+button:hover {
+    background: linear-gradient(to right, #0056b3, #003f8a);
+    transform: scale(1.05);
+}
+
+a {
+    text-decoration: none;
+}
+
+ul {
+    list-style-type: none;
+    padding: 0;
+    max-width: 900px;
+    margin: 0 auto;
+}
+
+li {
+    background: #ffffff;
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    margin-bottom: 25px;
+    padding: 25px;
+    transition: transform 0.3s, box-shadow 0.3s;
+    overflow: hidden; /* Adiciona para prevenir o vazamento de conteúdo */
+    text-overflow: ellipsis; /* Limita o texto com reticências se necessário */
+    word-wrap: break-word; /* Quebra palavras longas */
+    max-height: 800px; /* Limita a altura máxima */
+}
+
+li:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+}
+
+li h3 {
+    margin-top: 0;
+    font-size: 2em;
+    color: #007bff;
+    text-decoration: none;
+}
+
+li h4 {
+    font-size: 1.2em;
+    color: #6c757d;
+    margin: 15px 0;
+    word-wrap: break-word; /* Quebra palavras longas */
+}
+
+li p {
+    font-size: 1em;
+    color: #868e96;
+    line-height: 1.6;
+    word-wrap: break-word; /* Quebra palavras longas */
+    overflow-wrap: break-word; /* Quebra palavras longas */
+}
+
+textarea {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ced4da;
+    border-radius: 8px;
+    margin-top: 10px;
+    font-size: 14px;
+    resize: none;
+}
+
+textarea:focus {
+    border-color: #007bff;
+    outline: none;
+    box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+}
+
+form button {
+    margin-top: 10px;
+    width: 100%;
+}
+
+img {
+    display: block;
+    margin: 0 auto 20px;
+    border-radius: 50%;
+    width: 70px;
+    height: 70px;
+    object-fit: cover;
+}
+
+@media (max-width: 768px) {
     body {
-        font-family: 'Arial', sans-serif;
-        margin: 0;
-        padding: 0;
-        background-color: #f8f9fa;
-        color: #333;
+        padding: 15px;
     }
 
     h1 {
-        text-align: center;
-        font-size: 2.5em;
-        margin: 20px 0;
-        color: #2c3e50;
+        font-size: 2.2em;
     }
 
-    h4 {
-        font-size: 1.3em;
-        color: #34495e;
+    h3 {
+        font-size: 1.2em;
     }
 
-    p {
-        font-size: 1.1em;
-        line-height: 1.6;
-        margin-bottom: 20px;
+    ul {
+        padding: 0 10px;
     }
 
-    small {
-        color: #7f8c8d;
-    }
-
-    /* Post */
-    .post {
-        max-width: 800px;
-        margin: 0 auto;
+    li {
         padding: 20px;
-        background-color: #fff;
-        border-radius: 10px;
-        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-        margin-bottom: 30px;
     }
 
-    .post p {
-        font-size: 1.1em;
+    button {
+        font-size: 14px;
+        padding: 8px 20px;
     }
+}
 
-    /* Comentários */
-    .comments {
-        max-width: 800px;
-        margin: 30px auto;
-        background-color: #fff;
-        padding: 20px;
-        border-radius: 10px;
-        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-    }
-
-    .comments ul {
-        list-style: none;
-        padding: 0;
-    }
-
-    .comments li {
-        border-bottom: 1px solid #eee;
-        padding: 15px 0;
-    }
-
-    .comments li:last-child {
-        border-bottom: none;
-    }
-
-    .comments p {
-        font-size: 1em;
-        color: #34495e;
-    }
-
-    .comments small {
-        font-size: 0.9em;
-        color: #7f8c8d;
-    }
-
-    /* Formulário de Comentário */
-    .comment-form {
-        max-width: 800px;
-        margin: 30px auto;
-        padding: 20px;
-        background-color: #fff;
-        border-radius: 10px;
-        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-    }
-
-    .comment-form textarea {
-        width: 100%;
-        height: 100px;
-        padding: 10px;
-        border-radius: 5px;
-        border: 1px solid #ccc;
-        font-size: 1em;
-        color: #34495e;
-        resize: vertical;
-    }
-
-    .comment-form button, button{
-        padding: 10px 20px;
-        background-color: #007bff;
-        color: #fff;
-        font-size: 1em;
-        border: none;
-        border-radius: 5px;
-        cursor: pointer;
-        transition: background-color 0.3s;
-    }
-
-    .comment-form button:hover, button:hover {
-        background-color: #0056b3;
-    }
-
-    .comment-form p {
-        text-align: center;
-        font-size: 1.1em;
-        color: #34495e;
-    }
-
-    /* Responsividade */
-    @media (max-width: 768px) {
-        body {
-            padding: 10px;
-        }
-
-        .post, .comments, .comment-form {
-            padding: 15px;
-        }
-
-        h1 {
-            font-size: 2em;
-        }
-
-        .comment-form textarea {
-            height: 80px;
-        }
-    }
 </style>
 </head>
 <body>

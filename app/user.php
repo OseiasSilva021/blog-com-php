@@ -172,6 +172,7 @@ h2 {
     margin: 0 auto;
 }
 
+/* Adicionando controle de overflow e word-wrap para evitar o vazamento de texto */
 .post-list li {
     background-color: #ffffff;
     padding: 15px;
@@ -179,7 +180,16 @@ h2 {
     border-radius: var(--border-radius);
     box-shadow: var(--box-shadow);
     transition: transform 0.3s ease, box-shadow 0.3s ease;
+    word-wrap: break-word; /* Quebra as palavras longas */
+    overflow: hidden; /* Garante que nada saia do container */
+    text-overflow: ellipsis; /* Adiciona reticências no caso de overflow */
 }
+
+.post-list h4, .post-list p {
+    word-wrap: break-word; /* Quebra de linha em palavras longas */
+    overflow-wrap: break-word; /* Compatibilidade para garantir que palavras longas sejam quebradas */
+}
+
 
 .post-list li:hover {
     transform: translateY(-5px);
